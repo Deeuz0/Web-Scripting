@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Calculator</title>
+</head>
+<body>
+    <h2>Calculate Sum or Difference</h2>
+    
+    <label>Enter First Number:</label>
+    <input type="text" id="num1" value="0" >
+    <br>
+    <label>Enter Second Number:</label>
+    <input type="text" id="num2" value="0" >
+    <br><br>
+
+    <!-- Radio buttons for selecting the operation //checked -->
+    <input type="radio" id="add" name="operation"> 
+    <label for="add">Addition</label>
+    <br>
+    <input type="radio" id="subtract" name="operation">
+    <label for="subtract">Subtraction</label>
+    <br><br>
+
+    <input type="button" id="btnSubmit" onclick="calculate();" value="Calculate">
+    <div id="divOutput" style="margin-top: 10px; font-weight: bold;">The result will be here</div>
+
+    <script>
+        function calculate() {
+            // Get the input values
+            var num1 = parseFloat(document.getElementById("num1").value);
+            var num2 = parseFloat(document.getElementById("num2").value);
+
+            // Validate inputs
+            if (isNaN(num1) || isNaN(num2)) {
+                document.getElementById("divOutput").innerHTML = "Please enter valid numeric values.";
+                return;
+            }
+
+           
+            // Perform the selected operation
+            let result;
+            if (document.getElementById("add").checked) {
+                result = num1 + num2;
+            } else if (document.getElementById("subtract").checked) {
+                result = num1 - num2;
+            }
+
+            // Display the result
+            document.getElementById("divOutput").innerHTML = `The result is: ${result}`;
+        }
+    </script>
+</body>
+</html>
+       
