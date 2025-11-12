@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Information</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap'); /* this is just fr the futuristic font */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            background-color: #333;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            position: relative;
+        }
+
+        .container::before, .container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                #ccc,
+                #ccc 10px,
+                #fff 10px,
+                #fff 20px
+            );
+        }
+
+        .container::before {
+            left: -20px;
+        }
+
+        .container::after {
+            right: -20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .pokemon-image {
+            display: block;
+            margin: 10px auto;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Pokemon Database</div>
+    <div class="container">
+        <div class="form-group">
+            <label for="pokemon-id">Pokemon ID</label>
+            <input type="text" id="pokemon-id" name="pokemon-id">
+        </div>
+        <div class="form-group">
+            <label for="pokemon-number">Pokemon Number</label>
+            <input type="text" id="pokemon-number" name="pokemon-number">
+        </div>
+        <div class="form-group">
+            <label for="pokemon-name">Name</label>
+            <input type="text" id="pokemon-name" name="pokemon-name">
+        </div>
+        <div class="form-group">
+            <label for="pokemon-height">Height</label>
+            <input type="text" id="pokemon-height" name="pokemon-height">
+        </div>
+        <div class="form-group">
+            <label for="pokemon-weight">Weight</label>
+            <input type="text" id="pokemon-weight" name="pokemon-weight">
+        </div>
+        <img id="pokemon-image" class="pokemon-image" src="" alt="Pokemon Image">
+        <button onclick="fetchPokemonData()">Get Pokemon Info</button>
+        <div class="button-group">
+            <button onclick="fetchPreviousPokemon()">Previous</button>
+            <button onclick="fetchNextPokemon()">Next</button>
+        </div>
+        <div id="pokemon-info"></div>
+    </div>
+    <script>
+        let pokemonData = [];
+
+        async function fetchPokemonData() {
+            const pokemonId = document.getElementById('pokemon-id').value;
+            if (pokemonData.length === 0) {
+                const response = await fetch('https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json');
+                const pokemonJSON = await response.text(); // Fetch the JSON data as a string
+                const data = JSON.parse(pokemonJSON); // Parse the JSON string into a JavaScript object
+                pokemonData = data.pokemon; // Extract the Pokémon data
+            }
+            displayPokemon(pokemonId);
+        }
+
+        function displayPokemon(pokemonId) {
+            const pokemon = pokemonData.find(p => p.id == pokemonId);
+
+            if (pokemon) {
+                document.getElementById('pokemon-number').value = pokemon.num;
+                document.getElementById('pokemon-name').value = pokemon.name;
+                document.getElementById('pokemon-height').value = pokemon.height;
+                document.getElementById('pokemon-weight').value = pokemon.weight;
+                document.getElementById('pokemon-image').src = pokemon.img;
+
+                document.getElementById('pokemon-info').innerHTML = `
+                    <p><strong>Type:</strong> ${pokemon.type.join(', ')}</p>
+                    <p><strong>Weaknesses:</strong> ${pokemon.weaknesses.join(', ')}</p>
+                    <p><strong>Next Evolution:</strong> ${pokemon.next_evolution ? pokemon.next_evolution.map(e => e.name).join(', ') : 'None'}</p>
+                `;
+            } else {
+                document.getElementById('pokemon-info').innerHTML = '<p>Pokemon not found</p>';
+                document.getElementById('pokemon-image').src = '';
+            }
+        }
+
+        function fetchPreviousPokemon() {
+            const currentId = parseInt(document.getElementById('pokemon-id').value);
+            if (currentId > 1) {
+                document.getElementById('pokemon-id').value = currentId - 1;
+                displayPokemon(currentId - 1);
+            }
+        }
+
+        function fetchNextPokemon() {
+            const currentId = parseInt(document.getElementById('pokemon-id').value);
+            if (currentId < pokemonData.length) {
+                document.getElementById('pokemon-id').value = currentId + 1;
+                displayPokemon(currentId + 1);
+            }
+        }
+    </script>
+</body>
+</html>
